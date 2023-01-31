@@ -47,18 +47,35 @@ int main(int argc, char * argv[]){
 	gsl_matrix *a;
 	a = remplir_matrice(argv[1]);
 	// print_matrix_contents(a);
-
-
+	/*
+	// STRONG SCALING
 	for (int num_thread = 1; num_thread <= 16; num_thread *= 2) {
 		omp_set_num_threads(num_thread);
-		#pragma omp parallel
-		{
-			printf("A");
-		}
 		printf("NOMBRE DE THREAD  : %d\n", omp_get_max_threads());
 		printf("time to solution en moyenne de : %lf\n", PPR_lisse(LISSAGE_N, a));
 	}
-
+	// WEAK SCALING 
+	omp_set_num_threads(1);
+	printf("NOMBRE DE THREAD  : %d\n", omp_get_max_threads());
+	printf("time to solution en moyenne de : %lf\n", PPR_lisse(LISSAGE_N, a));
+	gsl_matrix *w_scaling = double_n(a);
+	omp_set_num_threads(4);
+	printf("NOMBRE DE THREAD  : %d\n", omp_get_max_threads());
+	printf("time to solution en moyenne de : %lf\n", PPR_lisse(LISSAGE_N, a));
+	w_scaling = double_n(w_scaling);
+	omp_set_num_threads(16);
+	printf("NOMBRE DE THREAD  : %d\n", omp_get_max_threads());
+	printf("time to solution en moyenne de : %lf\n", PPR_lisse(LISSAGE_N, a));
+	*/
+	omp_set_num_threads(8); // On va faire varier n maintenant.
+	printf("taille de la matrice : %ld\n", a->size1);
+	printf("time to solution en moyenne de : %lf\n", PPR_lisse(LISSAGE_N, a));
+	a = double_n(a);
+	printf("taille de la matrice : %ld\n", a->size1);
+	printf("time to solution en moyenne de : %lf\n", PPR_lisse(LISSAGE_N, a));
+	a = double_n(a);
+	printf("taille de la matrice : %ld\n", a->size1);
+	printf("time to solution en moyenne de : %lf\n", PPR_lisse(LISSAGE_N, a));
     // Liberation de la memoire
 	gsl_matrix_free(a);
 

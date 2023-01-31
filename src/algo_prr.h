@@ -8,5 +8,5 @@
 #include <stdlib.h>
 
 #define ITERATION_MAX 1500
-#define PRECISION_SOUHAITEE 0.000001 
+#define PRECISION_SOUHAITEE 10e-6
 void algo_PRR(gsl_matrix *a , double *x, int n, int m);

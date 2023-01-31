@@ -95,7 +95,7 @@ gsl_vector* matrix_vector_product(gsl_matrix *matrix, gsl_vector *vector)
 	gsl_vector *vector_result = gsl_vector_alloc(matrix->size1);
 	
 	//Parallelisation de la premiere boucle qui parcourt les lignes de la matrice
-	#pragma omp parallel for private(result) schedule(static)
+	#pragma omp parallel for private(result) schedule(dynamic) 
 	for(int row = 0; row < matrix->size1; row++)
 	{
 		// printf("%d : Thread %d\n", row, omp_get_thread_num());
@@ -133,7 +133,7 @@ gsl_matrix * double_n(gsl_matrix *matrix)
 	for(int i = n; i < 2*n; i++)
 		for(int j = n; j < 2*n; j++)
 			gsl_matrix_set(result_matrix, i, j, gsl_matrix_get(transposee, i - n, j - n));
-	print_matrix_contents(result_matrix);
+	//print_matrix_contents(result_matrix);
 	return result_matrix;
 }
 

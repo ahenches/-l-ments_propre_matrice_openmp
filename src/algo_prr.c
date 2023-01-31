@@ -18,7 +18,6 @@ void algo_PRR(gsl_matrix *A , double *x, int n, int m)
 	int est_precis; //booleen pour la precision de l iteration
 	int iteration;//Nombre d iteration 
 	double xi;//Variable utillisée dans le calcul de du nouveau vecteur x
-	double precision = 0.01;//precision souhaitee pour les resultats
 	double epsilon_i, epsilon_max; //precision des resultats de l iteration
 	
 	//Vecteurs utilisés pour le calcul du tableau c
@@ -170,7 +169,7 @@ void algo_PRR(gsl_matrix *A , double *x, int n, int m)
 			}
 		}
 		//Verification de la precision des calculs
-		if(epsilon_max < precision)
+		if(epsilon_max < PRECISION_SOUHAITEE)
 		{
 			est_precis = 1;
 		}
@@ -186,7 +185,7 @@ void algo_PRR(gsl_matrix *A , double *x, int n, int m)
 			x[i] = xi;
 		}
 		iteration++;
-//printf("epsilon max : %f\n", epsilon_max);
+//printf("epsilon max : %lf\n", epsilon_max);
 //printf("est precis : %d\n", est_precis);
 //printf("iteration : %d\n", iteration);
 	}
