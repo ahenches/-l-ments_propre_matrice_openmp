@@ -8,20 +8,20 @@
  */
 double get_norm_gsl(gsl_vector *vector)
 {
-	// calcul de la norme
-	double xi;
-	double sum = 0;
+	int i;
+	double xi, sum = 0;
 	//Parallelisation de la boucle 
-	#pragma omp parallel for reduction(+ : sum)
-	for (int i = 0; i < vector->size; i++)
+	#pragma omp parallel for private(i, xi) shared(vector) reduction(+ : sum) 
+	for (i = 0; i < vector->size; i++)
 	{
-//printf("Task dist %d WITH VALUE %d \n", omp_get_thread_num(), i);
 		xi = gsl_vector_get(vector, i);
 		sum += xi*xi;
+		// printf("Task %d attached to thread %d yields %f\n", i, omp_get_thread_num(), sum);
 	}
 	double norm = sqrt(sum);
 	return norm;
 }
+
 /**
  * @brief Fonction calculant la norme d un vecteur
  * 
@@ -32,19 +32,19 @@ double get_norm_gsl(gsl_vector *vector)
 double get_norm(double *vector, size_t size)
 {
 	// calcul de la norme
-	double xi;
+	int i;
 	double sum = 0;
 	//Parallelisation de la boucle 
-	#pragma omp parallel for reduction(+ : sum)
-	for (int i = 0; i < size; i++)
+	#pragma omp parallel for private(i) shared(size, vector) reduction(+ : sum) 
+	for (i = 0; i < size; i++)
 	{
-//printf("Task dist %d WITH VALUE %d \n", omp_get_thread_num(), i);
-		xi = vector[i];
-		sum += xi*xi;
+		sum += vector[i]*vector[i];
+		// printf("Task %d attached to thread %d yields %f\n", i, omp_get_thread_num(), sum);
 	}
 	double norm = sqrt(sum);
 	return norm;
 }
+
 /**
  * @brief Fonction qui permet de normaliser un vecteur
  * 
@@ -64,6 +64,7 @@ void normalize_vector(gsl_vector *vector_normalized, double *vector_to_normalize
 		gsl_vector_set(vector_normalized, i, vector_to_normalize[i] / norm);
 	}
 }
+
 /**
  * @brief Fonction calculant le produit scalaire de deux vecteurs
  * 
@@ -106,6 +107,34 @@ gsl_vector* matrix_vector_product(gsl_matrix *matrix, gsl_vector *vector)
 		gsl_vector_set(vector_result,row, result);
 	}
 	return vector_result;
+}
+
+/**
+ * @brief Fonction qui permet de doubler la taille d'une matrice
+ * 
+ * @param matrix La matrice d'origine.
+ */
+gsl_matrix * double_n(gsl_matrix *matrix)
+{
+	int n = matrix->size1;
+	gsl_matrix *result_matrix = gsl_matrix_alloc(n*2, n*2);
+	// on transpose la matrice de départ pour garder la symmétrie.
+	gsl_matrix *transposee = gsl_matrix_alloc(n, n);
+	gsl_matrix_transpose_memcpy(transposee, matrix);
+	for(int i = 0; i < n; i++)
+		for(int j = 0; j < n; j++)
+			gsl_matrix_set(result_matrix, i, j, gsl_matrix_get(matrix, i, j));
+	for(int i = 0; i < n; i++)
+		for(int j = n; j < 2*n; j++)
+			gsl_matrix_set(result_matrix, i, j, gsl_matrix_get(matrix, i, j - n));
+	for(int i = n; i < 2*n; i++)
+		for(int j = 0; j < n; j++)
+			gsl_matrix_set(result_matrix, i, j, gsl_matrix_get(transposee, i - n , j));
+	for(int i = n; i < 2*n; i++)
+		for(int j = n; j < 2*n; j++)
+			gsl_matrix_set(result_matrix, i, j, gsl_matrix_get(transposee, i - n, j - n));
+	print_matrix_contents(result_matrix);
+	return result_matrix;
 }
 
 /**

@@ -24,8 +24,12 @@ double scalar_product(gsl_vector *vector1, gsl_vector *vector2);
 // Calculer le produit d'une matrice donnée et d'un vecteur
 gsl_vector* matrix_vector_product(gsl_matrix *matrix, gsl_vector *vector);
 
+// Double la matrice ce qui quadruplera la taille de la donnée (pour le strong scaling)
+gsl_matrix * double_n(gsl_matrix *matrix);
+
 // Afficher le contenu d'un vecteur donné
 void print_vector_contents(gsl_vector *vector);
 
 // Afficher le contenu d'une matrice donnée
 void print_matrix_contents(gsl_matrix *matrix);
+
