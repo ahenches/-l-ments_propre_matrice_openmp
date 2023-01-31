@@ -7,14 +7,16 @@
 // https://en.wikipedia.org/wiki/Singular_value_decomposition
 // https://www.gnu.org/software/gsl/doc/html/eigen.html#c.gsl_eigen_symm_workspace
 
-int main(){
+int main(int argc, char *argv[]){
+	if (argc == 1)
+	{
+		printf("Argument nom de fichier manquant\n");
+		return 0;
+	}
 
-	//Initialisation et lecture de la matrice A depuis un fichier
+	// Initialisation et lecture de la matrice A depuis un fichier
 	gsl_matrix *a;
-	char * mat_name = "bcsstk03.mtx";
-	char mat_loc[50];
-	sprintf(mat_loc, "matrices/%s", mat_name);
-	a = remplir_matrice(mat_loc);
+	a = remplir_matrice(argv[1]);
 	// print_matrix_contents(a);
 
 	//Initialisation des tailles n et m (espace de depart et sous espace)
@@ -30,6 +32,7 @@ int main(){
 		X[i] = 0;
 	X[0] = 1;
 
+	omp_set_num_threads(1);
 	//Lancement de l algorithme sur la matrice lue et le vecteur x
 	algo_PRR(a, X, n, m);
 

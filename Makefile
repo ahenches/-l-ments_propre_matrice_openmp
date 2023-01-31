@@ -38,7 +38,7 @@ test.o: test.c
 
 clean: 
 	rm *.o
-	rm programme || rm test || rm calcul_perf
+	rm programme && rm test && rm calcul_perf
 
 
 
